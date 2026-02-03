@@ -446,7 +446,12 @@
         }
 
         function socialLogin(platform) {
-            alert(`Login with ${platform} - This would integrate with ${platform} OAuth`);
+            // Simulate social login
+            localStorage.setItem('userLoggedIn', 'true');
+            localStorage.setItem('userEmail', `user@${platform}.com`);
+            
+            // Redirect to home page
+            window.location.href = 'home.html';
         }
 
         // Handle form submissions
@@ -455,7 +460,38 @@
                 e.preventDefault();
                 const form = this.closest('.form');
                 const isLogin = form.id === 'loginForm';
-                alert(`${isLogin ? 'Login' : 'Sign Up'} submitted! This would process the form data.`);
+                
+                if (isLogin) {
+                    // Simulate login validation
+                    const email = form.querySelector('input[type="text"]').value;
+                    const password = form.querySelector('input[type="password"]').value;
+                    
+                    if (email && password) {
+                        // Store user session (in real app, this would be handled by backend)
+                        localStorage.setItem('userLoggedIn', 'true');
+                        localStorage.setItem('userEmail', email);
+                        
+                        // Redirect to home page
+                        window.location.href = 'home.html';
+                    } else {
+                        alert('Please enter both email and password');
+                    }
+                } else {
+                    // Handle sign up
+                    const email = form.querySelector('input[type="text"]').value;
+                    const password = form.querySelector('input[type="password"]').value;
+                    
+                    if (email && password) {
+                        // In real app, this would create account via backend
+                        localStorage.setItem('userLoggedIn', 'true');
+                        localStorage.setItem('userEmail', email);
+                        
+                        // Redirect to home page after signup
+                        window.location.href = 'home.html';
+                    } else {
+                        alert('Please fill in all fields');
+                    }
+                }
             });
         });
     </script>
