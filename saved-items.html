@@ -355,6 +355,11 @@
             color: rgba(255, 255, 255, 0.8);
         }
 
+        .highlight {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .sidebar {
@@ -576,11 +581,11 @@
         // Get stock status
         function getStockStatus(stock) {
             if (stock > 10) {
-                return { class: '', dot: '', text: `${stock} in stock` };
+                return { class: '', dot: '', text: `Only <span class="highlight">${stock}</span> in stock` };
             } else if (stock >= 5) {
-                return { class: 'low', dot: 'low', text: `Only ${stock} left in stock` };
+                return { class: 'low', dot: 'low', text: `Only <span class="highlight">${stock}</span> left in stock!` };
             } else {
-                return { class: 'critical', dot: 'critical', text: `Only ${stock} left in stock!` };
+                return { class: 'critical', dot: 'critical', text: `Only <span class="highlight">${stock}</span> left in stock!` };
             }
         }
 
