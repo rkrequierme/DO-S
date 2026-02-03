@@ -261,76 +261,6 @@
             stroke-width: 2;
         }
 
-        /* For the logout */
-        .modal-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.55);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-        }
-
-        .modal-overlay.active {
-            display: flex;
-        }
-
-        .logout-modal {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f5f2 100%);
-            border-radius: 16px;
-            padding: 25px 30px;
-            width: 320px;
-            text-align: center;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.25);
-            animation: popIn 0.25s ease;
-        }
-
-        .logout-modal h2 {
-            font-size: 18px;
-            color: #2D1810;
-            margin-bottom: 10px;
-        }
-
-        .logout-modal p {
-            font-size: 14px;
-            color: #555;
-            margin-bottom: 25px;
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .modal-actions button {
-            flex: 1;
-            padding: 10px;
-            border-radius: 10px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .btn-cancel {
-            background: #eee;
-            color: #444;
-        }
-
-        .btn-cancel:hover {
-            background: #e0e0e0;
-        }
-
-        .btn-confirm {
-            background: linear-gradient(135deg, #8B5A3C 0%, #6B4423 100%);
-            color: white;
-        }
-
-        .btn-confirm:hover {
-            opacity: 0.9;
-        }
-
         @keyframes popIn {
             from {
                 transform: scale(0.9);
@@ -465,7 +395,7 @@
                 </a>
             </li>
             <li class="sidebar-menu-item" style="margin-top: 20px;">
-                <a href="#" class="sidebar-menu-link" onclick="openLogoutModal(event)">
+                <a href="logout.html" class="sidebar-menu-link">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4m7 14l5-5-5-5m5 5H9"/></svg>
                     </span>
@@ -573,19 +503,6 @@
             </div>
         </div>
     </div>
-    
-    <!-- Logout Modal -->
-    <div class="modal-overlay" id="logoutModal">
-        <div class="logout-modal">
-            <h2>Log out?</h2>
-            <p>Are you sure you want to log out of your account?</p>
-
-            <div class="modal-actions">
-                <button class="btn-cancel" onclick="closeLogoutModal()">Cancel</button>
-                <button class="btn-confirm" onclick="confirmLogout()">Logout</button>
-            </div>
-        </div>
-    </div>
 
     <script>
         // Show coming soon message
@@ -601,39 +518,6 @@
             overlay.classList.toggle('active');
         }
 
-        // Logout function
-        function logout(e) {
-            e.preventDefault();
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.removeItem('userLoggedIn');
-                localStorage.removeItem('userEmail');
-                window.location.href = 'auth-interface.html';
-            }
-        }
-
-        let pendingLogoutEvent = null;
-
-        function openLogoutModal(e) {
-            e.preventDefault();
-            pendingLogoutEvent = e;
-            document.getElementById('logoutModal').classList.add('active');
-        }
-
-        function closeLogoutModal() {
-            document.getElementById('logoutModal').classList.remove('active');
-            pendingLogoutEvent = null;
-        }
-
-        function confirmLogout() {
-            // Temporarily override confirm()
-            const originalConfirm = window.confirm;
-            window.confirm = () => true;
-
-            logout(pendingLogoutEvent);
-
-            // Restore confirm()
-            window.confirm = originalConfirm;
-        }
         // Initialize
         window.addEventListener('load', function() {
             const userEmail = localStorage.getItem('userEmail');

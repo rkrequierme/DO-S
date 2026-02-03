@@ -635,7 +635,7 @@
                 </a>
             </li>
             <li class="sidebar-menu-item" style="margin-top: 20px;">
-                <a href="#" class="sidebar-menu-link" onclick="logout(event)" style="background: rgba(255, 255, 255, 0.1);">
+              <a href="logout.html" class="sidebar-menu-link">
                     <span class="menu-icon">
                         <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4m7 14l5-5-5-5m5 5H9"/></svg>
                     </span>
@@ -893,16 +893,6 @@
                 this.classList.add('active');
             });
         });
-
-        // Logout function
-        function logout(e) {
-            e.preventDefault();
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.removeItem('userLoggedIn');
-                localStorage.removeItem('userEmail');
-                window.location.href = 'auth-interface.html';
-            }
-        }
 
         // Load user's uploaded hero image if available
         window.addEventListener('load', function() {
