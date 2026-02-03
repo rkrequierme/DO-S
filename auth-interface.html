@@ -166,7 +166,7 @@
         .input-field {
             width: 100%;
             padding: 15px 20px;
-            border: none;
+            border: 2px solid transparent;
             border-radius: 25px;
             font-size: 14px;
             background: white;
@@ -181,6 +181,58 @@
 
         .input-field:focus {
             box-shadow: 0 0 0 3px rgba(61, 40, 23, 0.1);
+        }
+
+        .input-field.error {
+            border-color: #ff4444;
+            background: #fff5f5;
+        }
+
+        .input-field.success {
+            border-color: #4CAF50;
+        }
+
+        .error-message {
+            color: #ff4444;
+            font-size: 12px;
+            margin-top: 5px;
+            margin-left: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .validation-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .validation-icon.error {
+            background: #ff4444;
+            color: white;
+            display: flex;
+        }
+
+        .validation-icon.success {
+            background: #4CAF50;
+            color: white;
+            display: flex;
         }
 
         .password-toggle {
@@ -369,16 +421,24 @@
                 <div class="form active" id="loginForm">
                     <h2 class="form-title">LOG IN</h2>
                     <div class="input-group">
-                        <input type="text" class="input-field" placeholder="Email or Username">
+                        <div class="input-wrapper">
+                            <input type="text" class="input-field" id="loginEmail" placeholder="Email or Username">
+                            <span class="validation-icon" id="loginEmailIcon"></span>
+                        </div>
+                        <div class="error-message" id="loginEmailError">Username not valid</div>
                     </div>
                     <div class="input-group">
-                        <input type="password" class="input-field" id="loginPassword" placeholder="Password">
-                        <span class="password-toggle" onclick="togglePassword('loginPassword')">👁️</span>
+                        <div class="input-wrapper">
+                            <input type="password" class="input-field" id="loginPassword" placeholder="Password">
+                            <span class="password-toggle" onclick="togglePassword('loginPassword')">👁️</span>
+                            <span class="validation-icon" id="loginPasswordIcon" style="right: 50px;"></span>
+                        </div>
+                        <div class="error-message" id="loginPasswordError">Password not valid</div>
                     </div>
                     <div class="forgot-password">
                         <a href="#">Forgot password?</a>
                     </div>
-                    <button class="submit-button">
+                    <button class="submit-button" type="button" onclick="handleLogin()">
                         <span>→</span>
                         <span>Sign In</span>
                     </button>
@@ -388,13 +448,21 @@
                 <div class="form" id="signupForm">
                     <h2 class="form-title">SIGN UP</h2>
                     <div class="input-group">
-                        <input type="text" class="input-field" placeholder="Email or Username">
+                        <div class="input-wrapper">
+                            <input type="text" class="input-field" id="signupEmail" placeholder="Email or Username">
+                            <span class="validation-icon" id="signupEmailIcon"></span>
+                        </div>
+                        <div class="error-message" id="signupEmailError">Username not valid</div>
                     </div>
                     <div class="input-group">
-                        <input type="password" class="input-field" id="signupPassword" placeholder="Create Password">
-                        <span class="password-toggle" onclick="togglePassword('signupPassword')">👁️</span>
+                        <div class="input-wrapper">
+                            <input type="password" class="input-field" id="signupPassword" placeholder="Create Password">
+                            <span class="password-toggle" onclick="togglePassword('signupPassword')">👁️</span>
+                            <span class="validation-icon" id="signupPasswordIcon" style="right: 50px;"></span>
+                        </div>
+                        <div class="error-message" id="signupPasswordError">Password must be at least 6 characters</div>
                     </div>
-                    <button class="submit-button">
+                    <button class="submit-button" type="button" onclick="handleSignup()">
                         <span>→</span>
                         <span>Sign Up</span>
                     </button>
@@ -445,6 +513,202 @@
             }
         }
 
+        // Validation functions
+        function validateEmail(email) {
+            // Check if email is not empty and has minimum length
+            if (!email || email.trim().length < 3) {
+                return false;
+            }
+            // Simple email/username validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            const usernameRegex = /^[a-zA-Z0-9_]{3,}$/;
+            return emailRegex.test(email) || usernameRegex.test(email);
+        }
+
+        function validatePassword(password) {
+            return password && password.length >= 6;
+        }
+
+        function showError(inputId, iconId, errorId, message) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            const error = document.getElementById(errorId);
+            
+            input.classList.add('error');
+            input.classList.remove('success');
+            icon.classList.add('error');
+            icon.classList.remove('success');
+            icon.innerHTML = '!';
+            error.textContent = message;
+            error.classList.add('show');
+        }
+
+        function showSuccess(inputId, iconId, errorId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            const error = document.getElementById(errorId);
+            
+            input.classList.remove('error');
+            input.classList.add('success');
+            icon.classList.remove('error');
+            icon.classList.add('success');
+            icon.innerHTML = '✓';
+            error.classList.remove('show');
+        }
+
+        function clearValidation(inputId, iconId, errorId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            const error = document.getElementById(errorId);
+            
+            input.classList.remove('error', 'success');
+            icon.classList.remove('error', 'success');
+            error.classList.remove('show');
+        }
+
+        // Handle Login
+        function handleLogin() {
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            let isValid = true;
+
+            // Validate email
+            if (!validateEmail(email)) {
+                showError('loginEmail', 'loginEmailIcon', 'loginEmailError', 'Username not valid');
+                isValid = false;
+            } else {
+                showSuccess('loginEmail', 'loginEmailIcon', 'loginEmailError');
+            }
+
+            // Validate password
+            if (!validatePassword(password)) {
+                showError('loginPassword', 'loginPasswordIcon', 'loginPasswordError', 'Password not valid');
+                isValid = false;
+            } else {
+                showSuccess('loginPassword', 'loginPasswordIcon', 'loginPasswordError');
+            }
+
+            // If valid, proceed to login
+            if (isValid) {
+                localStorage.setItem('userLoggedIn', 'true');
+                localStorage.setItem('userEmail', email);
+                
+                // Show success message briefly before redirect
+                setTimeout(() => {
+                    window.location.href = 'home.html';
+                }, 500);
+            }
+        }
+
+        // Handle Signup
+        function handleSignup() {
+            const email = document.getElementById('signupEmail').value.trim();
+            const password = document.getElementById('signupPassword').value;
+            
+            let isValid = true;
+
+            // Validate email
+            if (!validateEmail(email)) {
+                showError('signupEmail', 'signupEmailIcon', 'signupEmailError', 'Username not valid');
+                isValid = false;
+            } else {
+                showSuccess('signupEmail', 'signupEmailIcon', 'signupEmailError');
+            }
+
+            // Validate password
+            if (!validatePassword(password)) {
+                showError('signupPassword', 'signupPasswordIcon', 'signupPasswordError', 'Password must be at least 6 characters');
+                isValid = false;
+            } else {
+                showSuccess('signupPassword', 'signupPasswordIcon', 'signupPasswordError');
+            }
+
+            // If valid, proceed to signup
+            if (isValid) {
+                localStorage.setItem('userLoggedIn', 'true');
+                localStorage.setItem('userEmail', email);
+                
+                // Show success message briefly before redirect
+                setTimeout(() => {
+                    window.location.href = 'home.html';
+                }, 500);
+            }
+        }
+
+        // Real-time validation on input
+        document.addEventListener('DOMContentLoaded', function() {
+            // Login email validation
+            document.getElementById('loginEmail').addEventListener('input', function() {
+                const email = this.value.trim();
+                if (email.length > 0) {
+                    if (validateEmail(email)) {
+                        showSuccess('loginEmail', 'loginEmailIcon', 'loginEmailError');
+                    } else {
+                        showError('loginEmail', 'loginEmailIcon', 'loginEmailError', 'Username not valid');
+                    }
+                } else {
+                    clearValidation('loginEmail', 'loginEmailIcon', 'loginEmailError');
+                }
+            });
+
+            // Login password validation
+            document.getElementById('loginPassword').addEventListener('input', function() {
+                const password = this.value;
+                if (password.length > 0) {
+                    if (validatePassword(password)) {
+                        showSuccess('loginPassword', 'loginPasswordIcon', 'loginPasswordError');
+                    } else {
+                        showError('loginPassword', 'loginPasswordIcon', 'loginPasswordError', 'Password not valid');
+                    }
+                } else {
+                    clearValidation('loginPassword', 'loginPasswordIcon', 'loginPasswordError');
+                }
+            });
+
+            // Signup email validation
+            document.getElementById('signupEmail').addEventListener('input', function() {
+                const email = this.value.trim();
+                if (email.length > 0) {
+                    if (validateEmail(email)) {
+                        showSuccess('signupEmail', 'signupEmailIcon', 'signupEmailError');
+                    } else {
+                        showError('signupEmail', 'signupEmailIcon', 'signupEmailError', 'Username not valid');
+                    }
+                } else {
+                    clearValidation('signupEmail', 'signupEmailIcon', 'signupEmailError');
+                }
+            });
+
+            // Signup password validation
+            document.getElementById('signupPassword').addEventListener('input', function() {
+                const password = this.value;
+                if (password.length > 0) {
+                    if (validatePassword(password)) {
+                        showSuccess('signupPassword', 'signupPasswordIcon', 'signupPasswordError');
+                    } else {
+                        showError('signupPassword', 'signupPasswordIcon', 'signupPasswordError', 'Password must be at least 6 characters');
+                    }
+                } else {
+                    clearValidation('signupPassword', 'signupPasswordIcon', 'signupPasswordError');
+                }
+            });
+
+            // Handle Enter key on login form
+            document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleLogin();
+                }
+            });
+
+            // Handle Enter key on signup form
+            document.getElementById('signupPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleSignup();
+                }
+            });
+        });
+
         function socialLogin(platform) {
             // Simulate social login
             localStorage.setItem('userLoggedIn', 'true');
@@ -453,47 +717,6 @@
             // Redirect to home page
             window.location.href = 'home.html';
         }
-
-        // Handle form submissions
-        document.querySelectorAll('.submit-button').forEach(button => {
-            button.addEventListener('click', function(e) {
-                e.preventDefault();
-                const form = this.closest('.form');
-                const isLogin = form.id === 'loginForm';
-                
-                if (isLogin) {
-                    // Simulate login validation
-                    const email = form.querySelector('input[type="text"]').value;
-                    const password = form.querySelector('input[type="password"]').value;
-                    
-                    if (email && password) {
-                        // Store user session (in real app, this would be handled by backend)
-                        localStorage.setItem('userLoggedIn', 'true');
-                        localStorage.setItem('userEmail', email);
-                        
-                        // Redirect to home page
-                        window.location.href = 'home.html';
-                    } else {
-                        alert('Please enter both email and password');
-                    }
-                } else {
-                    // Handle sign up
-                    const email = form.querySelector('input[type="text"]').value;
-                    const password = form.querySelector('input[type="password"]').value;
-                    
-                    if (email && password) {
-                        // In real app, this would create account via backend
-                        localStorage.setItem('userLoggedIn', 'true');
-                        localStorage.setItem('userEmail', email);
-                        
-                        // Redirect to home page after signup
-                        window.location.href = 'home.html';
-                    } else {
-                        alert('Please fill in all fields');
-                    }
-                }
-            });
-        });
     </script>
 </body>
 </html>
