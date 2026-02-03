@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baylo - Home</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 220px;
+            height: 100vh;
+            background: linear-gradient(180deg, #8B5A3C 0%, #6B4423 100%);
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .user-icon {
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .user-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: #6B4423;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .sidebar-header-text {
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu-item {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: #F5E6D3;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .sidebar-menu-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu-link.active {
+            background: rgba(245, 230, 211, 0.2);
+        }
+
+        .menu-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        /* Minimalist Line Icons */
+        .icon-inbox::before { content: ''; display: block; width: 16px; height: 12px; border: 2px solid #F5E6D3; border-radius: 2px; position: relative; }
+        .icon-inbox::after { content: ''; position: absolute; width: 12px; height: 2px; background: #F5E6D3; top: 5px; left: 2px; }
+        
+        .icon-heart { width: 16px; height: 16px; position: relative; }
+        .icon-heart::before { content: '♡'; color: #F5E6D3; font-size: 18px; line-height: 1; }
+        
+        .icon-clock { width: 16px; height: 16px; border: 2px solid #F5E6D3; border-radius: 50%; position: relative; }
+        .icon-clock::before { content: ''; position: absolute; width: 2px; height: 6px; background: #F5E6D3; top: 2px; left: 5px; }
+        .icon-clock::after { content: ''; position: absolute; width: 4px; height: 2px; background: #F5E6D3; top: 5px; left: 5px; }
+        
+        .icon-location { width: 12px; height: 16px; border: 2px solid #F5E6D3; border-radius: 50% 50% 50% 0; transform: rotate(-45deg); }
+        .icon-location::before { content: ''; position: absolute; width: 4px; height: 4px; background: #F5E6D3; border-radius: 50%; top: 3px; left: 3px; }
+        
+        .icon-contacts { display: flex; gap: 2px; }
+        .icon-contacts::before { content: ''; width: 8px; height: 8px; border: 2px solid #F5E6D3; border-radius: 50%; }
+        .icon-contacts::after { content: ''; width: 8px; height: 8px; border: 2px solid #F5E6D3; border-radius: 50%; }
+        
+        .icon-settings { width: 16px; height: 16px; position: relative; }
+        .icon-settings::before { content: '⚙'; color: #F5E6D3; font-size: 18px; line-height: 1; font-weight: 300; }
+        
+        .icon-help { width: 16px; height: 16px; border: 2px solid #F5E6D3; border-radius: 50%; position: relative; }
+        .icon-help::before { content: '?'; color: #F5E6D3; font-size: 12px; font-weight: bold; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        
+        .icon-logout::before { content: '→'; color: #F5E6D3; font-size: 20px; font-weight: 300; line-height: 1; }
+
+        .menu-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: #F5E6D3;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: 220px;
+            padding: 0;
+        }
+
+        /* Mobile Toggle */
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: linear-gradient(135deg, #8B5A3C 0%, #6B4423 100%);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Responsive Sidebar */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .sidebar-overlay {
+                display: none;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+            }
+
+            .sidebar-overlay.active {
+                display: block;
+            }
+        }
+
+        /* Header/Hero Section */
+        .hero-section {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 20px;
+            max-width: calc(100% - 40px);
+        }
+
+        .hero-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.3), transparent);
+            display: flex;
+            align-items: center;
+            padding: 40px;
+        }
+
+        .hero-text {
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.5);
+            font-family: 'Georgia', serif;
+        }
+
+        .hero-logo {
+            max-width: 300px;
+            height: auto;
+            filter: drop-shadow(2px 2px 8px rgba(0,0,0,0.5));
+        }
+
+        /* Main Content */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Featured Categories Section */
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section-header {
+            background: linear-gradient(135deg, #B0D4E3 0%, #A0C4D3 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            font-style: italic;
+            color: #2D1810;
+            letter-spacing: 1px;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 0 20px;
+        }
+
+        .category-card {
+            background: white;
+            border-radius: 15px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* Items Section */
+        .items-header {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2D1810;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        .items-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .item-card {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .item-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .item-image {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+
+        .item-info {
+            padding: 10px;
+        }
+
+        .item-title {
+            font-size: 12px;
+            color: #333;
+            margin-bottom: 3px;
+            font-weight: 500;
+        }
+
+        .item-price {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .wishlist-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .wishlist-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .wishlist-btn.active {
+            color: red;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .categories-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .items-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                height: 200px;
+                margin: 10px;
+            }
+
+            .hero-text {
+                font-size: 32px;
+            }
+
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .items-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .items-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .categories-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Footer Styles */
+        .footer {
+            background: linear-gradient(180deg, #8B5A3C 0%, #9B6A4C 100%);
+            color: #F5E6D3;
+            padding: 60px 40px 40px;
+            margin-top: 80px;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr 1fr 1fr;
+            gap: 40px;
+        }
+
+        .footer-brand {
+            padding-right: 40px;
+        }
+
+        .footer-brand h3 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: white;
+        }
+
+        .footer-brand p {
+            font-size: 13px;
+            line-height: 1.6;
+            color: #E5D5C3;
+            margin-bottom: 25px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .social-icon svg {
+            width: 20px;
+            height: 20px;
+            fill: #8B5A3C;
+        }
+
+        .footer-column h4 {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: white;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .footer-links {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .footer-links li {
+            margin-bottom: 12px;
+        }
+
+        .footer-links a {
+            color: #E5D5C3;
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(3px);
+        }
+
+        .footer-bottom {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 20px 40px;
+            text-align: center;
+            color: #E5D5C3;
+            font-size: 12px;
+        }
+
+        @media (max-width: 1024px) {
+            .footer-content {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+
+            .footer-brand {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .footer {
+                padding: 40px 20px 20px;
+            }
+
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+
+            .footer-brand {
+                padding-right: 0;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Sidebar Toggle for Mobile -->
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header" onclick="goToAccount()">
+            <div class="user-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+            </div>
+            <div class="sidebar-header-text">My Account</div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+                <a href="#inbox" class="sidebar-menu-link">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    </span>
+                    <span>Inbox</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#saved" class="sidebar-menu-link">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+                    </span>
+                    <span>Saved Items</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#recent" class="sidebar-menu-link">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </span>
+                    <span>Recently Viewed</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#delivery" class="sidebar-menu-link">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </span>
+                    <span>Delivery Address</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#contacts" class="sidebar-menu-link">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                    </span>
+                    <span>Contacts</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#settings" class="sidebar-menu-link">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m5.66-13.66l-4.24 4.24m-2.83 2.83l-4.24 4.24M23 12h-6m-6 0H1m18.66 5.66l-4.24-4.24m-2.83-2.83l-4.24-4.24"/></svg>
+                    </span>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#help" class="sidebar-menu-link">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 015.83 1c0 2-3 3-3 3m.08 4h.01"/></svg>
+                    </span>
+                    <span>Help</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item" style="margin-top: 20px;">
+                <a href="#" class="sidebar-menu-link" onclick="logout(event)" style="background: rgba(255, 255, 255, 0.1);">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4m7 14l5-5-5-5m5 5H9"/></svg>
+                    </span>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <img src="https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=1200&h=400&fit=crop" alt="Hero" class="hero-image" id="heroImage">
+        <div class="hero-overlay">
+            <img src="https://scontent.fmnl31-1.fna.fbcdn.net/v/t1.15752-9/622456638_931683889434808_5353751368144472084_n.png?_nc_cat=111&ccb=1-7&_nc_sid=0024fc&_nc_ohc=6QlSHV0LkPEQ7kNvwHeJ5Ay&_nc_oc=AdmhhEEK5z-VL7Cil2O4S6j5RFsHPZcxZK_miLc6XHOED1dVLHwoIEjX4zC4ByGoULZg1M0geBIoQCAR1Gy_44nK&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=scontent.fmnl31-1.fna&oh=03_Q7cD4gHANmGd1uKfKfMQqDXxn1qrX13QzJ9bMQL4Tt-51hvDYQ&oe=69A8E32D" alt="Baylo Logo" class="hero-logo" id="heroLogo" onerror="this.style.display='none'; document.getElementById('heroTextFallback').style.display='block';">
+            <div class="hero-text" id="heroTextFallback" style="display: none;">Baylo</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Featured Categories -->
+        <div class="section">
+            <div class="section-header">
+                <h2 class="section-title">FEATURED CATEGORIES</h2>
+            </div>
+            <div class="categories-grid">
+                <div class="category-card" onclick="goToCategory('electronics')">
+                    <span style="font-size: 14px; color: #666;">Electronics</span>
+                </div>
+                <div class="category-card" onclick="goToCategory('fashion')">
+                    <span style="font-size: 14px; color: #666;">Fashion</span>
+                </div>
+                <div class="category-card" onclick="goToCategory('home')">
+                    <span style="font-size: 14px; color: #666;">Home & Garden</span>
+                </div>
+                <div class="category-card" onclick="goToCategory('sports')">
+                    <span style="font-size: 14px; color: #666;">Sports</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- From Nearby Section -->
+        <div class="section">
+            <h3 class="items-header">From Nearby.</h3>
+            <div class="items-grid">
+                <!-- Row 1 -->
+                <div class="item-card" onclick="viewItem(1)">
+                    <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=300&h=300&fit=crop" alt="Laptop" class="item-image">
+                    <div class="wishlist-btn" onclick="toggleWishlist(event, this)">♡</div>
+                    <div class="item-info">
+                        <div class="item-title">Laptop</div>
+                        <div class="item-price">₱ 25,000</div>
+                    </div>
+                </div>
+
+                <div class="item-card" onclick="viewItem(2)">
+                    <img src="https://images.unsplash.com/photo-1551028719-00167b16eac5?w=300&h=300&fit=crop" alt="Jacket" class="item-image">
+                    <div class="wishlist-btn" onclick="toggleWishlist(event, this)">♡</div>
+                    <div class="item-info">
+                        <div class="item-title">Winter Jacket</div>
+                        <div class="item-price">₱ 2,500</div>
+                    </div>
+                </div>
+
+                <div class="item-card" onclick="viewItem(3)">
+                    <img src="https://images.unsplash.com/photo-1539533018447-63fcce2678e3?w=300&h=300&fit=crop" alt="Dress" class="item-image">
+                    <div class="wishlist-btn" onclick="toggleWishlist(event, this)">♡</div>
+                    <div class="item-info">
+                        <div class="item-title">Elegant Dress</div>
+                        <div class="item-price">₱ 1,800</div>
+                    </div>
+                </div>
+
+                <div class="item-card" onclick="viewItem(4)">
+                    <img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=300&h=300&fit=crop" alt="Shoes" class="item-image">
+                    <div class="wishlist-btn" onclick="toggleWishlist(event, this)">♡</div>
+                    <div class="item-info">
+                        <div class="item-title">Black Heels</div>
+                        <div class="item-price">₱ 3,200</div>
+                    </div>
+                </div>
+
+                <div class="item-card" onclick="viewItem(5)">
+                    <img src="https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?w=300&h=300&fit=crop" alt="Sweater" class="item-image">
+                    <div class="wishlist-btn" onclick="toggleWishlist(event, this)">♡</div>
+                    <div class="item-info">
+                        <div class="item-title">Cozy Sweater</div>
+                        <div class="item-price">₱ 1,500</div>
+                    </div>
+                </div>
+
+                <!-- Row 2 -->
+                <div class="item-card" onclick="viewItem(6)">
+                    <img src="https://images.unsplash.com/photo-1460353581641-37baddab0fa2?w=300&h=300&fit=crop" alt="Bag" class="item-image">
+                    <div class="wishlist-btn" onclick="toggleWishlist(event, this)">♡</div>
+                    <div class="item-info">
+                        <div class="item-title">Designer Bag</div>
+                        <div class="item-price">₱ 5,500</div>
+                    </div>
+                </div>
+
+                <div class="item-card" onclick="viewItem(7)">
+                    <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=300&h=300&fit=crop" alt="Watch" class="item-image">
+                    <div class="wishlist-btn" onclick="toggleWishlist(event, this)">♡</div>
+                    <div class="item-info">
+                        <div class="item-title">Classic Watch</div>
+                        <div class="item-price">₱ 8,900</div>
+                    </div>
+                </div>
+
+                <div class="item-card" onclick="viewItem(8)">
+                    <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=300&h=300&fit=crop" alt="Sunglasses" class="item-image">
+                    <div class="wishlist-btn" onclick="toggleWishlist(event, this)">♡</div>
+                    <div class="item-info">
+                        <div class="item-title">Sunglasses</div>
+                        <div class="item-price">₱ 2,200</div>
+                    </div>
+                </div>
+
+                <div class="item-card" onclick="viewItem(9)">
+                    <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=300&h=300&fit=crop" alt="Sneakers" class="item-image">
+                    <div class="wishlist-btn" onclick="toggleWishlist(event, this)">♡</div>
+                    <div class="item-info">
+                        <div class="item-title">White Sneakers</div>
+                        <div class="item-price">₱ 4,800</div>
+                    </div>
+                </div>
+
+                <div class="item-card" onclick="viewItem(10)">
+                    <img src="https://images.unsplash.com/photo-1542272604-787c3835535d?w=300&h=300&fit=crop" alt="Jeans" class="item-image">
+                    <div class="wishlist-btn" onclick="toggleWishlist(event, this)">♡</div>
+                    <div class="item-info">
+                        <div class="item-title">Denim Jeans</div>
+                        <div class="item-price">₱ 1,900</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End Main Content -->
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h3>BAYLO</h3>
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis ti.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-icon" aria-label="Facebook">
+                        <svg viewBox="0 0 24 24"><path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon" aria-label="Twitter">
+                        <svg viewBox="0 0 24 24"><path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"/></svg>
+                    </a>
+                    <a href="#" class="social-icon" aria-label="Instagram">
+                        <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-column">
+                <h4>LOREM IPSUM</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Lorem</a></li>
+                    <li><a href="#">Lorem</a></li>
+                    <li><a href="#">Lorem</a></li>
+                    <li><a href="#">Lorem</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h4>LOREM IPSUM</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Lorem</a></li>
+                    <li><a href="#">Lorem</a></li>
+                    <li><a href="#">Lorem</a></li>
+                    <li><a href="#">Lorem</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h4>LOREM IPSUM</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Lorem</a></li>
+                    <li><a href="#">Lorem</a></li>
+                    <li><a href="#">Lorem</a></li>
+                    <li><a href="#">Lorem</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-column">
+                <h4>LOREM IPSUM</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Lorem</a></li>
+                    <li><a href="#">Lorem</a></li>
+                    <li><a href="#">Lorem</a></li>
+                    <li><a href="#">Lorem</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+
+    <div class="footer-bottom">
+        © 2026 Baylo. All rights reserved.
+    </div>
+
+    <script>
+        // Toggle sidebar for mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        // Go to account page
+        function goToAccount() {
+            alert('My Account - This would navigate to account settings page');
+        }
+        // Toggle wishlist
+        function toggleWishlist(event, element) {
+            event.stopPropagation();
+            element.classList.toggle('active');
+            if (element.classList.contains('active')) {
+                element.innerHTML = '♥';
+                element.style.color = 'red';
+            } else {
+                element.innerHTML = '♡';
+                element.style.color = 'black';
+            }
+        }
+
+        // View item details
+        function viewItem(itemId) {
+            alert(`Viewing item #${itemId}. This would navigate to the item detail page.`);
+        }
+
+        // Go to category
+        function goToCategory(category) {
+            alert(`Browsing ${category} category. This would navigate to the category page.`);
+        }
+
+        // Add active class to current menu item
+        document.querySelectorAll('.sidebar-menu-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                // Close sidebar on mobile after clicking
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
+                }
+                
+                // Remove active class from all links
+                document.querySelectorAll('.sidebar-menu-link').forEach(l => l.classList.remove('active'));
+                
+                // Add active class to clicked link
+                this.classList.add('active');
+            });
+        });
+
+        // Logout function
+        function logout(e) {
+            e.preventDefault();
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('userLoggedIn');
+                localStorage.removeItem('userEmail');
+                window.location.href = 'auth-interface.html';
+            }
+        }
+
+        // Load user's uploaded hero image if available
+        window.addEventListener('load', function() {
+            // You can replace this with actual user's uploaded image
+            const userHeroImage = localStorage.getItem('userHeroImage');
+            if (userHeroImage) {
+                document.getElementById('heroImage').src = userHeroImage;
+            }
+        });
+    </script>
+</body>
+</html>
