@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baylo - Trade Item</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f5f5f5;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 220px;
+            height: 100vh;
+            background: linear-gradient(180deg, #8B5A3C 0%, #6B4423 100%);
+            padding: 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .user-icon {
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+        }
+
+        .user-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: #6B4423;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .sidebar-header-text {
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .sidebar-menu-item {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            color: #F5E6D3;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .sidebar-menu-link:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(5px);
+        }
+
+        .sidebar-menu-link.active {
+            background: rgba(245, 230, 211, 0.2);
+        }
+
+        .menu-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .menu-icon svg {
+            width: 18px;
+            height: 18px;
+            stroke: #F5E6D3;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: 220px;
+            padding: 40px;
+            min-height: 100vh;
+        }
+
+        /* Mobile Toggle */
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1001;
+            background: linear-gradient(135deg, #8B5A3C 0%, #6B4423 100%);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        /* Trade Container */
+        .trade-container {
+            background: linear-gradient(135deg, #8B5A3C 0%, #9B6A4C 100%);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .trade-header {
+            background: linear-gradient(135deg, #B0D4E3 0%, #A0C4D3 100%);
+            padding: 20px 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .trade-header-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .trade-header-icon svg {
+            width: 28px;
+            height: 28px;
+            stroke: #2D1810;
+            fill: none;
+            stroke-width: 2;
+        }
+
+        .trade-header h1 {
+            color: #2D1810;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        /* Trade Content */
+        .trade-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 40px;
+            align-items: start;
+        }
+
+        /* Left Column - Image */
+        .trade-image-container {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            height: 500px;
+        }
+
+        .trade-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .trade-image:hover {
+            transform: scale(1.02);
+        }
+
+        .image-badge {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #8B5A3C;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        /* Right Column - Details Container */
+        .trade-details-container {
+            display: flex;
+            flex-direction: column;
+            height: 500px; /* Match image height */
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 3px 15px rgba(0,0,0,0.1);
+        }
+
+        /* Top Section - Seller Info & Item Details */
+        .details-top {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-bottom: 20px;
+        }
+
+        .seller-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .seller-avatar {
+            width: 50px;
+            height: 50px;
+            background: #E5D5C3;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: #8B5A3C;
+            font-size: 18px;
+        }
+
+        .seller-details h3 {
+            font-size: 16px;
+            color: #2D1810;
+            margin-bottom: 5px;
+        }
+
+        .seller-rating {
+            font-size: 12px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .star {
+            color: #FFD700;
+        }
+
+        .item-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2D1810;
+            margin-bottom: 15px;
+            line-height: 1.3;
+        }
+
+        .item-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .item-details-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .item-details-list li {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #2D1810;
+        }
+
+        .item-details-list li:before {
+            content: "✓";
+            color: #8B5A3C;
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Bottom Section - Trade Info & Button */
+        .details-bottom {
+            border-top: 2px solid #8B5A3C;
+            padding-top: 25px;
+            margin-top: 20px;
+        }
+
+        /* Price Section */
+        .price-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .price-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .price-amount {
+            font-size: 32px;
+            font-weight: bold;
+            color: #8B5A3C;
+        }
+
+        /* Condition and Category Buttons */
+        .item-tags {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .tag-btn {
+            padding: 10px 25px;
+            border: 2px solid #8B5A3C;
+            background: white;
+            color: #8B5A3C;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: default;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .tag-btn:hover {
+            background: #8B5A3C;
+            color: white;
+        }
+
+        /* Trade Button */
+        .trade-actions {
+            display: flex;
+            justify-content: center;
+        }
+
+        .trade-btn {
+            width: 100%;
+            padding: 18px 20px;
+            background: linear-gradient(135deg, #8B5A3C 0%, #6B4423 100%);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(139, 90, 60, 0.3);
+        }
+
+        .trade-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(139, 90, 60, 0.4);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .trade-content {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .trade-image-container {
+                height: 400px;
+            }
+            
+            .trade-details-container {
+                height: auto;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 20px;
+            }
+
+            .sidebar-toggle {
+                display: block;
+            }
+
+            .trade-container {
+                padding: 15px;
+            }
+
+            .trade-content {
+                padding: 25px;
+            }
+
+            .trade-details-container {
+                padding: 20px;
+            }
+
+            .item-tags {
+                flex-wrap: wrap;
+            }
+            
+            .price-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Toggle for Mobile -->
+    <button class="sidebar-toggle" onclick="toggleSidebar()">☰</button>
+
+    <!-- Sidebar Overlay for Mobile -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header" onclick="window.location.href='my-account.html'">
+            <div class="user-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                    <circle cx="12" cy="7" r="4"/>
+                </svg>
+            </div>
+            <div class="sidebar-header-text">My Account</div>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li class="sidebar-menu-item">
+                <a href="home.html" class="sidebar-menu-link">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                    </span>
+                    <span>Home</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="inbox.html" class="sidebar-menu-link">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24"><path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    </span>
+                    <span>Inbox</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="saved-items.html" class="sidebar-menu-link">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+                    </span>
+                    <span>Saved Items</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="#recent" class="sidebar-menu-link">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </span>
+                    <span>Recently Viewed</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="trade.html" class="sidebar-menu-link active">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/></svg>
+                    </span>
+                    <span>Trade</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="sell.html" class="sidebar-menu-link">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    </span>
+                    <span>Sell</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item">
+                <a href="settings.html" class="sidebar-menu-link">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m5.66-13.66l-4.24 4.24m-2.83 2.83l-4.24 4.24M23 12h-6m-6 0H1m18.66 5.66l-4.24-4.24m-2.83-2.83l-4.24-4.24"/></svg>
+                    </span>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li class="sidebar-menu-item" style="margin-top: 20px;">
+                <a href="logout.html" class="sidebar-menu-link">
+                    <span class="menu-icon">
+                        <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4m7 14l5-5-5-5m5 5H9"/></svg>
+                    </span>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="trade-container">
+            <div class="trade-header">
+                <div class="trade-header-icon">
+                    <svg viewBox="0 0 24 24">
+                        <circle cx="9" cy="21" r="1"/>
+                        <circle cx="20" cy="21" r="1"/>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"/>
+                    </svg>
+                </div>
+                <h1>Trade</h1>
+            </div>
+
+            <div class="trade-content">
+                <!-- Left Column - Big Image -->
+                <div class="trade-image-container">
+                    <img src="https://images.unsplash.com/photo-1549298916-b41d501d3772?w=800&h=600&fit=crop" alt="Gaming Laptop" class="trade-image">
+                    <div class="image-badge">TRADE AVAILABLE</div>
+                </div>
+
+                <!-- Right Column - Details Container -->
+                <div class="trade-details-container">
+                    <!-- Top Section -->
+                    <div class="details-top">
+                        <!-- Seller Info -->
+                        <div class="seller-info">
+                            <div class="seller-avatar">JD</div>
+                            <div class="seller-details">
+                                <h3>Juan Dela Cruz</h3>
+                                <div class="seller-rating">
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span class="star">★</span>
+                                    <span>(4.8 • 127 reviews)</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Title -->
+                        <h1 class="item-title">ASUS ROG Zephyrus G14 Gaming Laptop</h1>
+
+                        <!-- Description -->
+                        <p class="item-description">
+                            Powerful gaming laptop with AMD Ryzen 9 processor and NVIDIA RTX 3060 graphics. Perfect for gaming, content creation, and productivity. Comes with original box, charger, and accessories. Purchased 6 months ago, selling because I'm upgrading to a newer model.
+                        </p>
+
+                        <!-- Item Details List -->
+                        <ul class="item-details-list">
+                            <li>6 months used - still under warranty</li>
+                            <li>No issues or defects</li>
+                            <li>Very good condition with minimal signs of use</li>
+                            <li>Original box and all accessories included</li>
+                            <li>Factory reset and ready to use</li>
+                            <li>Regularly cleaned and well-maintained</li>
+                        </ul>
+                    </div>
+
+                    <!-- Bottom Section with Separator Line -->
+                    <div class="details-bottom">
+                        <!-- Price Section -->
+                        <div class="price-section">
+                            <div class="price-label">Trade Value</div>
+                            <div class="price-amount">₱ 68,500</div>
+                        </div>
+
+                        <!-- Condition and Category Buttons -->
+                        <div class="item-tags">
+                            <button class="tag-btn" id="conditionBtn">Like New</button>
+                            <button class="tag-btn" id="categoryBtn">Electronics</button>
+                        </div>
+
+                        <!-- Trade Button -->
+                        <div class="trade-actions">
+                            <button class="trade-btn" onclick="makeTradeOffer()">TRADE OFFER</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle sidebar for mobile
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            sidebar.classList.toggle('active');
+            overlay.classList.toggle('active');
+        }
+
+        // Make trade offer function
+        function makeTradeOffer() {
+            // Get item details
+            const itemTitle = document.querySelector('.item-title').textContent;
+            const itemPrice = document.querySelector('.price-amount').textContent;
+            
+            // Show confirmation dialog
+            const confirmation = confirm(`Make a trade offer for:\n\n${itemTitle}\n${itemPrice}\n\nProceed to trade interface?`);
+            
+            if (confirmation) {
+                // In a real application, this would redirect to the trade interface
+                alert('Redirecting to trade interface...\n\nThis would open a modal or new page where you can select items from your inventory to trade.');
+                
+                // For demo purposes, simulate a trade modal
+                simulateTradeModal();
+            }
+        }
+
+        // Simulate trade modal (for demo)
+        function simulateTradeModal() {
+            const modalHTML = `
+                <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:2000; display:flex; align-items:center; justify-content:center; padding:20px;">
+                    <div style="background:white; border-radius:15px; padding:30px; max-width:500px; width:100%;">
+                        <h2 style="color:#2D1810; margin-bottom:20px;">Make Trade Offer</h2>
+                        <p style="color:#666; margin-bottom:20px;">Select items from your inventory to offer in trade for <strong>ASUS ROG Zephyrus G14 Gaming Laptop</strong></p>
+                        
+                        <div style="margin-bottom:20px;">
+                            <label style="display:block; font-size:14px; color:#666; margin-bottom:8px;">Your Offer Value</label>
+                            <input type="number" placeholder="Enter total value of your trade offer" style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px;">
+                        </div>
+                        
+                        <div style="margin-bottom:30px;">
+                            <label style="display:block; font-size:14px; color:#666; margin-bottom:8px;">Add Items to Trade</label>
+                            <select style="width:100%; padding:12px; border:1px solid #ddd; border-radius:8px;">
+                                <option>Select items from your inventory</option>
+                                <option>iPhone 13 Pro (₱35,000)</option>
+                                <option>PlayStation 5 (₱25,000)</option>
+                                <option>Bose Headphones (₱15,000)</option>
+                                <option>iPad Pro (₱40,000)</option>
+                            </select>
+                        </div>
+                        
+                        <div style="display:flex; gap:15px;">
+                            <button onclick="closeTradeModal()" style="flex:1; padding:12px; background:#e0e0e0; border:none; border-radius:8px; color:#666; font-weight:600; cursor:pointer;">Cancel</button>
+                            <button onclick="submitTradeOffer()" style="flex:1; padding:12px; background:#8B5A3C; border:none; border-radius:8px; color:white; font-weight:600; cursor:pointer;">Submit Offer</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const modalDiv = document.createElement('div');
+            modalDiv.innerHTML = modalHTML;
+            modalDiv.id = 'tradeModal';
+            document.body.appendChild(modalDiv);
+            
+            // Add close function to global scope
+            window.closeTradeModal = function() {
+                document.getElementById('tradeModal').remove();
+            };
+            
+            window.submitTradeOffer = function() {
+                alert('Trade offer submitted successfully!\n\nThe seller will review your offer and respond within 24 hours.');
+                closeTradeModal();
+            };
+        }
+
+        // Initialize
+        window.addEventListener('load', function() {
+            const userEmail = localStorage.getItem('userEmail');
+            if (!userEmail) {
+                window.location.href = 'auth-interface.html';
+            }
+            
+            // Set active class for current page
+            document.querySelectorAll('.sidebar-menu-link').forEach(link => {
+                if (link.getAttribute('href') === 'trade.html') {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
